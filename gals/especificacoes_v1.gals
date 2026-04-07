@@ -1,0 +1,81 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Full
+Input = String
+Parser = SLR
+#RegularDefinitions
+min:[a-z]
+mai:[A-Z]
+dig:[0-9]
+
+bloco: "{" [^\{\}]* "}"
+linha: "\\" (.)* "\\"
+#Tokens
+// Símbolos Especiais
+":"
+";"
+","
+"="
+"<-"
+"("
+")"
+"&&"
+"||"
+"!"
+"=="
+"!="
+"<"
+"<="
+">"
+">="
+"+"
+"-"
+"*"
+"/"
+"^"
+
+pr_ask: "ask"
+pr_bool: "bool"
+pr_char: "char"
+pr_define: "define"
+pr_end: "end"
+pr_elif: "elif"
+pr_else: "else"
+pr_false: "false"
+pr_float: "float"
+pr_if: "if"
+pr_int: "int"
+pr_main: "main"
+pr_repeat: "repeat"
+pr_string: "string"
+pr_tell: "tell"
+pr_true: "true"
+pr_until: "until"
+pr_while: "while"
+
+identificador: {min} ( {min} | {dig} | _{dig}+ )*
+
+// Constantes
+constante_int: {dig}+
+constante_float: {dig}+ \. {dig}+
+constante_char: \\ (n | s | t)
+// Regra da string: qualquer caractere exceto \n, " e \. Se houver %, precisa de x.
+constante_string: \" ([^\n\"\\%] | %x)* \"
+
+// Comentários e Formatação (O ":" no início indica que o GALS deve ignorar na saída)
+//  comentário de linha é #, comentário de bloco é { \n ... \n }
+: # [^\n]*
+: \{ \n [^\{\}]* \n \}
+
+// Caracteres de formatação (Ignorar)
+: [\s\t\n\r]
+#NonTerminals
+
+#Grammar
+
