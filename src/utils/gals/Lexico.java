@@ -1,4 +1,3 @@
-
 package utils.gals;
 
 public class Lexico implements Constants
@@ -8,32 +7,17 @@ public class Lexico implements Constants
 
     public Lexico()
     {
-        this(new java.io.StringReader(""));
+        this("");
     }
 
-    public Lexico(java.io.Reader input)
+    public Lexico(String input)
     {
         setInput(input);
     }
 
-    public void setInput(java.io.Reader input)
+    public void setInput(String input)
     {
-        StringBuffer bfr = new StringBuffer();
-        try
-        {
-            int c = input.read();
-            while (c != -1)
-            {
-                bfr.append((char)c);
-                c = input.read();
-            }
-            this.input = bfr.toString();
-        }
-        catch (java.io.IOException e)
-        {
-            e.printStackTrace();
-        }
-
+        this.input = input;
         setPosition(0);
     }
 
@@ -83,6 +67,7 @@ public class Lexico implements Constants
         else
         {
             String lexeme = input.substring(start, end);
+            token = lookupToken(token, lexeme);
             return new Token(token, lexeme, start);
         }
     }
@@ -99,6 +84,27 @@ public class Lexico implements Constants
             return -1;
 
         return TOKEN_STATE[state];
+    }
+
+    public int lookupToken(int base, String key)
+    {
+        int start = SPECIAL_CASES_INDEXES[base];
+        int end   = SPECIAL_CASES_INDEXES[base+1]-1;
+
+        while (start <= end)
+        {
+            int half = (start+end)/2;
+            int comp = SPECIAL_CASES_KEYS[half].compareTo(key);
+
+            if (comp == 0)
+                return SPECIAL_CASES_VALUES[half];
+            else if (comp < 0)
+                start = half+1;
+            else  //(comp > 0)
+                end = half-1;
+        }
+
+        return base;
     }
 
     private boolean hasInput()

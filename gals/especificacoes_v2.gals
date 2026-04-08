@@ -1,0 +1,81 @@
+#Options
+GenerateScanner = true
+GenerateParser = false
+Language = Java
+ScannerName = Lexico
+ScannerCaseSensitive = true
+ScannerTable = Full
+Input = String
+#RegularDefinitions
+min:[a-z]
+mai:[A-Z]
+dig:[0-9]
+
+bloco: "{" [^\{\}]* "}"
+linha: "\\" (.)* "\\"
+#Tokens
+
+
+
+// Identificador
+
+id_a:! {min}+ (_ {dig}+)*
+cte_int: dig+
+cte_float:{dig}+ \.{dig}+
+cte_char: \\(n | s | t)
+cstring: \"[^\n\""\"]*\"
+
+// Comentarios: Reconhecer e ignorar
+
+:!{linha}
+:!{bloco}
+
+// Caracteres de formatação: Reconhecer e ignorar
+
+:[\n\t\s]
+
+// Palavras reservadas
+
+pr_ask = id_a: "ask"
+pr_bool = id_a: "bool"
+pr_char = id_a: "char"
+pr_define = id_a: "define"
+pr_end = id_a: "end"
+pr_elif = id_a: "elif"
+pr_else = id_a: "else"
+pr_false = id_a: "false"
+pr_float = id_a: "float"
+pr_if = id_a: "if"
+pr_int = id_a: "int"
+pr_main = id_a: "main"
+pr_repeat = id_a: "repeat"
+pr_string = id_a: "string"
+pr_tell = id_a: "tell"
+pr_true = id_a: "true"
+pr_until = id_a: "until"
+pr_while = id_a: "while"
+
+// Simbolos especiais
+
+":"
+";"
+","
+"="
+"<-"
+"("
+")"
+"&&"
+"||"
+"!"
+"=="
+"!="
+"<"
+"<="
+">"
+">="
+"+"
+"-"
+"*"
+"/"
+"^"
+
