@@ -26,22 +26,14 @@ import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import compilador.Compilador;
 import interfaceCompilador.NumberedBorder;
+import utils.gals.LexicalError;
+import utils.gals.Lexico;
+import utils.gals.ScannerConstants;
+import utils.gals.Token;
 
 public class Interface extends JFrame {
-	/// ==============================
-	/// PONTOS DO TRABALHO JA FEITOS
-	/// ==============================
-	/// 1
-	/// 2,
-	/// 3,
-	/// 4,
-	/// 5,
-	/// 6,
-	/// 7,
-	/// 8,
-	/// 9 (parcial,falta implementar os atalhos),
-	/// 11
 
 	private JPanel contentPane;
 	private JTextArea editor;
@@ -49,6 +41,12 @@ public class Interface extends JFrame {
 	private JLabel status;
 	private File arquivoAtual;
 
+	
+	
+	//TODO: Revisar código da classe Compilador.java, verificar as entradas e saídas no analisador
+	//se estão ok com o trabalho 2 e revisar o arquivo especificacoes_v2.gals na parte dos tokens (usar como base a correção do trabalho N1 feito na sala)
+	//Boa sorte best
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			try {
@@ -293,8 +291,16 @@ public class Interface extends JFrame {
 		mensagens.setText("Equipe de desenvolvimento:\n\n" + "Andrieli Mendes\n" + "Patrícia Oliveira Cordeiro\n");
 	}
 
+	
+	
+	
+	/// Método responsável pela compilação
 	private void compilar() {
-		mensagens.setText("compilação de programas ainda não foi implementada");
+		mensagens.setText("");
+		Compilador compilador = new Compilador();
+		String resultado = compilador.compilar(editor.getText());
+
+		mensagens.setText(resultado);
 	}
 
 	private void salvarArquivo() {
