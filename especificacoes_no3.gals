@@ -7,7 +7,7 @@ ParserName = Sintatico
 SemanticName = Semantico
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = String
+Input = Stream
 Parser = LL
 #RegularDefinitions
 min:[a-z]
@@ -20,9 +20,9 @@ linha: "\\" (.)* "\\"
 // Identificador
 
 id_a:! {min}+ (_ {dig}+)*
-cte_int: dig+
-cte_float:{dig}+ \.{dig}+
-cte_char: \\(n | s | t)
+//cte_int: dig+
+//cte_float:{dig}+ \.{dig}+
+//cte_char: \\(n | s | t)
 cstring: \"[^\n\""\"]*\"
 
 // Comentarios: Reconhecer e ignorar
@@ -112,34 +112,65 @@ pr_while = id_a: "while"
 <fator>
 <fator_>
 <elemento>
-
-
-
-
-
-
+<lista_itr1>
+<lista_id1>
+<lista_ent1>
+<var_q61>
+<var_q71>
+<lista_exp1>
 #Grammar
 <main_q1> ::= pr_main <dec_var> <lista_itr> pr_end ;
 
-<lista_itr> ::= <instrucao> ";" | <instrucao> ";" <lista_itr> ;
+//<lista_itr> ::= <instrucao> ";"
+//	 | <instrucao> ";" <lista_itr> ;
+<lista_itr> ::= <instrucao> ";" <lista_itr1> ;
+<lista_itr1> ::= î | <lista_itr> ;
+
 <dec_var> ::= î | <define_q2> ;
 <instrucao> ::= <var_q7> | <ask_q3> | <tell_q4> | <if_q5> | <var_q6> ;
 
 <define_q2> ::= pr_define <tipo> ":" <lista_id> ";" <repete_def> ;
-<lista_id> ::= id_a | id_a "," <lista_id> ;
+//<lista_id> ::= id_a 
+//	| id_a "," <lista_id> ;
+<lista_id> ::= id_a <lista_id1> ;
+<lista_id1> ::= î | "," <lista_id> ; 
+
 <tipo> ::= pr_int | pr_float | pr_char | pr_bool | cstring ;
 <repete_def> ::= <tipo> ":" <lista_id> ";" <repete_def> | î ;
 
 <ask_q3> ::= pr_ask "("<lista_ent>")" ;
-<lista_ent> ::= <opcional> id_a | <opcional> id_a "," <lista_ent> ;
+//<lista_ent> ::= <opcional> id_a 
+	//| <opcional> id_a "," <lista_ent> ;
+<lista_ent> ::= <opcional> id_a <lista_ent1> ;
+<lista_ent1> ::= î | "," <lista_ent> ;
+
 <opcional> ::= î | cstring "," ;
 
-<if_q5> ::= pr_if <expressao> <lista_itr> pr_elif pr_else pr_end ;
-<elif> ::= î | pr_elif <lista_itr> ; 
-<else> ::= î | pr_else <lista_itr> ;
-<var_q6> ::= pr_repeat <lista_itr> pr_while <expressao> | pr_repeat <lista_itr> pr_until <expressao> ;
+<tell_q4> ::= pr_tell "(" <lista_exp> ")" ;
 
-<var_q7> ::= <lista_id> "=" <expressao> | <lista_id> "<-" <expressao> ;
+//<lista_exp> ::= <expressao> 
+//	| <expressao> "," <lista_exp> ;
+<lista_exp> ::= <expressao> <lista_exp1>;
+<lista_exp1> ::= î | "," <lista_exp> ;
+
+
+<if_q5> ::= pr_if <expressao> <lista_itr> <elif> <else> pr_end ;
+<elif> ::= î | pr_elif <expressao> <lista_itr> <elif>; 
+<else> ::= î | pr_else <lista_itr> ;
+
+
+//<var_q6> ::= pr_repeat <lista_itr> pr_while <expressao>
+//	 | pr_repeat <lista_itr> pr_until <expressao> ;
+
+<var_q6> ::= pr_repeat <lista_itr> <var_q61> ;
+<var_q61> ::= pr_while <expressao> | pr_until <expressao> ;
+
+
+//<var_q7> ::= <lista_id> "=" <expressao> 
+//	| <lista_id> "<-" <expressao> ;
+
+<var_q7> ::= <lista_id> <var_q71>;
+<var_q71> ::= "=" <expressao> | "<-" <expressao> ;
 
 <expressao> ::= <termo_logico> <expressao_> ;
 <expressao_> ::= î | "&&" <termo_logico> <expressao_> | "||" <termo_logico> <expressao_> ;
