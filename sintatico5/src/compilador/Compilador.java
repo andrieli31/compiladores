@@ -5,15 +5,21 @@ import utils.gals.*;
 public class Compilador {
 
 	private Token ultimoToken = null;
+	private Semantico ultimoSemantico = null;
+	private boolean sucesso = false;
 
 	public String compilar(String texto) {
 		StringBuilder saida = new StringBuilder();
 		ultimoToken = null;
+		ultimoSemantico = null;
+		sucesso = false;
 
 		Lexico lexico = new Lexico();
 		Sintatico sintatico = new Sintatico();
 		Semantico semantico = new Semantico();
 		lexico.setInput(texto);
+
+		ultimoSemantico = semantico;
 
 		Lexico lexicoInterceptado = new Lexico(texto) {
 			@Override
@@ -28,27 +34,41 @@ public class Compilador {
 		try {
 		    sintatico.parse(lexicoInterceptado, semantico);
 		    saida.append("programa compilado com sucesso");
+		    sucesso = true;
 
 		} catch (LexicalError e) {
 		    int linha = getLinha(texto, e.getPosition());
-		    saida.append(formatarErroLexico(e, linha, texto));
+		    saida.append("linha " + linha + ": erro léxico");
 
 		} catch (SyntaticError e) {
 		    int linha = getLinha(texto, e.getPosition());
-
-		    String encontrado;
-		    if (e.getPosition() >= texto.trim().length()) {
-		        encontrado = "EOF";
-		    } else {
-		        encontrado = getEncontrado(ultimoToken, texto);
-		    }
-
-		    saida.append("linha " + linha + ": encontrado " + encontrado + " " + e.getMessage());
+		    saida.append("linha " + linha + ": erro sintático");
+			//		    int linha = getLinha(texto, e.getPosition());
+//
+//		    String encontrado;
+//		    if (e.getPosition() >= texto.trim().length()) {
+//		        encontrado = "EOF";
+//		    } else {
+//		        encontrado = getEncontrado(ultimoToken, texto);
+//		    }
+//
+//		    saida.append("linha " + linha + ": encontrado " + encontrado + " " + e.getMessage());
 
 		} catch (SemanticError e) {
-		    saida.append(e.getMessage());
-		}
+			  int linha = getLinha(texto, e.getPosition());
+			    saida.append("linha " + linha + ": " + e.getMessage());		}
 		return saida.toString();
+	}
+
+	// =========================
+	// ACESSO AO RESULTADO DA COMPILAÇÃO
+	// =========================
+	public boolean isSucesso() {
+		return sucesso;
+	}
+
+	public String getCodigoObjeto() {
+		return ultimoSemantico != null ? ultimoSemantico.getCodigoObjeto() : "";
 	}
 
 	// =========================
@@ -70,7 +90,7 @@ public class Compilador {
 	    // Verifica se o restante do texto (após o último token) é só espaço/quebra
 	    if (token != null) {
 	        String resto = texto.substring(
-	            Math.min(token.getLexeme() != null ? 
+	            Math.min(token.getLexeme() != null ?
 	                texto.indexOf(token.getLexeme()) + token.getLexeme().length() : 0,
 	                texto.length())
 	        ).trim();

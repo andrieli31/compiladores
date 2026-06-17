@@ -433,24 +433,21 @@ public class Semantico implements Constants {
 
 	    String id = token.getLexeme();
 
-	    // valida se existe na tabela de símbolos
 	    if (!tabelaSimbolos.containsKey(id)) {
-	        throw new SemanticError("Variável não declarada: " + id);
+	        throw new SemanticError("Variável não declarada: " + id, token.getPosition());
 	    }
 
 	    String tipo = tabelaSimbolos.get(id);
 
-	    // REGRA OBRIGATÓRIA: bool e char não podem receber entrada
 	    if ("bool".equals(tipo) || "char".equals(tipo)) {
 	        throw new SemanticError(
-	            id + " - identificador inválido para comando de entrada"
+	            id + " - identificador inválido para comando de entrada",
+	            token.getPosition()
 	        );
 	    }
 
-	    // leitura padrão
 	    codigoObjeto.append("call string [mscorlib]System.Console::ReadLine()\n");
 
-	    // conversão conforme tipo
 	    if ("int64".equals(tipo)) {
 	        codigoObjeto.append(
 	            "call int64 [mscorlib]System.Int64::Parse(string)\n"
@@ -462,7 +459,6 @@ public class Semantico implements Constants {
 	        );
 	    }
 
-	    // armazenamento
 	    codigoObjeto.append("stloc ")
 	                .append(id)
 	                .append("\n");

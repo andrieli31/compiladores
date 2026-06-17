@@ -182,13 +182,11 @@ public class Interface extends JFrame {
 
 		JFileChooser chooser = new JFileChooser();
 
-		// Filtro apenas .txt
 		FileNameExtensionFilter filtro = new FileNameExtensionFilter("Arquivos Texto (*.txt)", "txt");
 		chooser.setFileFilter(filtro);
 
 		int resultado = chooser.showOpenDialog(this);
 
-		// Se usuário cancelar → NÃO faz nada
 		if (resultado != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
@@ -199,6 +197,7 @@ public class Interface extends JFrame {
 
 			editor.read(br, null);
 			mensagens.setText("");
+			arquivoAtual = arquivo;
 			status.setText(" " + arquivo.getAbsolutePath());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Erro ao abrir arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -297,11 +296,38 @@ public class Interface extends JFrame {
 	/// Método responsável pela compilação
 	private void compilar() {
 		mensagens.setText("");
+
+		if (arquivoAtual == null) {
+			mensagens.setText("Salve o arquivo antes de compilar");
+			return;
+		}
+
 		Compilador compilador = new Compilador();
 		String resultado = compilador.compilar(editor.getText());
 
 		mensagens.setText(resultado);
+
+		if (compilador.isSucesso()) {
+			gerarArquivoIL(compilador.getCodigoObjeto());
+		}
 	}
+	
+	private void gerarArquivoIL(String codigoObjeto) {
+
+		String caminho = arquivoAtual.getAbsolutePath();
+		int pontoExtensao = caminho.lastIndexOf('.');
+		String caminhoIL = (pontoExtensao != -1 ? caminho.substring(0, pontoExtensao) : caminho) + ".il";
+
+		try {
+			java.io.FileWriter writer = new java.io.FileWriter(caminhoIL);
+			writer.write(codigoObjeto);
+			writer.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Erro ao gerar arquivo .il", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	
 
 	private void salvarArquivo() {
 
